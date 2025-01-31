@@ -111,19 +111,19 @@ namespace Oxide.Plugins
                     }
                 }
                 
-                if (otherPlayer.currentTeam != 0UL)
-                {
-                    var otherTeam = RelationshipManager.ServerInstance.FindTeam(otherPlayer.currentTeam);
-                    if (otherTeam != null)
-                    {
-                        foreach (var member in otherTeam.members)
-                        {
-                            var memberPlayer = BasePlayer.FindByID(member);
-                            memberPlayer?.TeamUpdate();
-                        }
-                    }
-                }
-            }
+            //     if (otherPlayer.currentTeam != 0UL)
+            //     {
+            //         var otherTeam = RelationshipManager.ServerInstance.FindTeam(otherPlayer.currentTeam);
+            //         if (otherTeam != null)
+            //         {
+            //             foreach (var member in otherTeam.members)
+            //             {
+            //                 var memberPlayer = BasePlayer.FindByID(member);
+            //                 memberPlayer?.TeamUpdate();
+            //             }
+            //         }
+            //     }
+            // }
         }
 
         private bool IsAnOwner(BasePlayer player)
