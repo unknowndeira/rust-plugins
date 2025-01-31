@@ -55,16 +55,19 @@ namespace Oxide.Plugins
         void Init()
         {
             LoadConfig();
-            timer.Every(CLEANUP_INTERVAL, () => StartCleanupSequence());
+            timer.Every(CLEANUP_INTERVAL, () => 
+            {
+                if (BaseNetworkable.serverEntities.OfType<DroppedItem>().Count() >= 10)
+                {
+                    StartCleanupSequence();
+                }
+            });
         }
 
         private void StartCleanupSequence()
         {
             if (!isWarningActive)
             {
-                var droppedItems = BaseNetworkable.serverEntities.OfType<DroppedItem>().ToList();
-                if (droppedItems.Count < 10) return;
-
                 isWarningActive = true;
                 Server.Broadcast(config.WarningMessage);
                 timer.Once(WARNING_TIME - 10f, () =>
@@ -85,17 +88,9 @@ namespace Oxide.Plugins
 
         private void CleanupItems()
         {
-            var droppedItems = BaseNetworkable.serverEntities.OfType<DroppedItem>().ToList();
-            var count = 0;
-
-            foreach (var item in droppedItems)
-            {
-                if (!item.IsDestroyed)
-                {
-                    item.Kill();
-                    count++;
-                }
-            }
+            var count = BaseNetworkable.serverEntities.OfType<DroppedItem>()
+                .Where(item => !item.IsDestroyed)
+                .Count(item => { item.Kill(); return true; });
 
             if (count > 0)
             {
