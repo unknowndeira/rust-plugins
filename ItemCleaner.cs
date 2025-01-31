@@ -62,14 +62,18 @@ namespace Oxide.Plugins
         {
             if (!isWarningActive)
             {
-                var droppedItems = UnityEngine.Object.FindObjectsOfType<DroppedItem>();
-                if (droppedItems.Length < 10) return;
+                var droppedItems = BaseNetworkable.serverEntities.OfType<DroppedItem>().ToList();
+                if (droppedItems.Count < 10) return;
 
                 isWarningActive = true;
                 Server.Broadcast(config.WarningMessage);
                 timer.Once(WARNING_TIME - 10f, () =>
                 {
-                    Server.Broadcast(config.SecondWarningMessage);
+                    var currentItems = BaseNetworkable.serverEntities.OfType<DroppedItem>().Any();
+                    if (currentItems)
+                    {
+                        Server.Broadcast(config.SecondWarningMessage);
+                    }
                 });
                 timer.Once(WARNING_TIME, () =>
                 {
@@ -81,12 +85,12 @@ namespace Oxide.Plugins
 
         private void CleanupItems()
         {
+            var droppedItems = BaseNetworkable.serverEntities.OfType<DroppedItem>().ToList();
             var count = 0;
-            var droppedItems = UnityEngine.Object.FindObjectsOfType<DroppedItem>();
 
             foreach (var item in droppedItems)
             {
-                if (item != null && !item.IsDestroyed)
+                if (!item.IsDestroyed)
                 {
                     item.Kill();
                     count++;
